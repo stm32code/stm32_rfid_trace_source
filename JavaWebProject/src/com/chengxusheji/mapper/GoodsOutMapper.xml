@@ -1,0 +1,49 @@
+<!DOCTYPE mapper  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--namespace命名空间，为了对sql语句进行隔离，方便管理，mapper开发dao方式，使用namespace有特殊作用  
+mapper代理开发时将namespace指定为mapper接口的全限定名  
+ -->
+<mapper namespace="com.chengxusheji.mapper.GoodsOutMapper"> 
+<!--在mapper.xml文件中配置很多的sql语句，执行每个sql语句时，封装为MappedStatement对象 
+mapper.xml以statement为单位管理sql语句  
+ -->
+	<!-- 添加商品出箱记录 -->
+	<insert id="addGoodsOut" parameterType="goodsOut">
+		insert into t_goodsOut(outGoodsRfid,outNumb,outTime,goodsRfid) values 
+		(#{outGoodsRfid.goodsId},#{outNumb},#{outTime},#{goodsRfid})
+	</insert>
+
+	<!-- 按照查询条件分页查询商品出箱记录 -->
+	<select id="queryGoodsOut" resultMap="goodsOutMap" >
+		select t_goodsOut.* from t_goodsOut,t_goods ${where} and t_goodsOut.outGoodsRfid = t_goods.goodsId limit #{startIndex},#{pageSize}
+	</select>
+	<resultMap id="goodsOutMap" type="goodsOut">
+        <id property="outId" column="outId" />
+        <association property="outGoodsRfid" column="outGoodsRfid" select="com.chengxusheji.mapper.GoodsMapper.getGoods" />
+    </resultMap>
+
+    <!-- 按照查询条件查询所有商品出箱记录 -->
+	<select id="queryGoodsOutList" resultMap="goodsOutMap" >
+		select t_goodsOut.* from t_goodsOut,t_goods ${where} and t_goodsOut.outGoodsRfid = t_goods.goodsId
+	</select>
+
+    <!-- 按照查询条件的商品出箱记录数 -->
+	<select id="queryGoodsOutCount" resultType="int">
+		select count(*) from t_goodsOut,t_goods ${where} and t_goodsOut.outGoodsRfid = t_goods.goodsId
+	</select>
+
+	<!-- 根据主键查询某个商品出箱记录 -->
+	<select id="getGoodsOut" parameterType="int" resultMap="goodsOutMap">
+		select * from t_goodsOut where t_goodsOut.outId = #{outId}
+	</select>
+
+	<!-- 更新商品出箱记录 -->
+	<update id="updateGoodsOut" parameterType="goodsOut">
+		update t_goodsOut set outGoodsRfid=#{outGoodsRfid.goodsId},outNumb=#{outNumb},outTime=#{outTime},goodsRfid=#{goodsRfid} where outId = #{outId}
+	</update>
+
+	<!-- 删除商品出箱记录 -->
+	<delete id="deleteGoodsOut" parameterType="int">
+		delete from t_goodsOut where outId=#{outId}
+	</delete>
+
+</mapper>

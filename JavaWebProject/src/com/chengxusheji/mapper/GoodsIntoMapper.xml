@@ -1,0 +1,49 @@
+<!DOCTYPE mapper  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--namespace命名空间，为了对sql语句进行隔离，方便管理，mapper开发dao方式，使用namespace有特殊作用  
+mapper代理开发时将namespace指定为mapper接口的全限定名  
+ -->
+<mapper namespace="com.chengxusheji.mapper.GoodsIntoMapper"> 
+<!--在mapper.xml文件中配置很多的sql语句，执行每个sql语句时，封装为MappedStatement对象 
+mapper.xml以statement为单位管理sql语句  
+ -->
+	<!-- 添加商品入箱记录 -->
+	<insert id="addGoodsInto" parameterType="goodsInto">
+		insert into t_goodsInto(goodsIntoObj,intoNumb,intoTIme,goodsRfid) values 
+		(#{goodsIntoObj.goodsId},#{intoNumb},#{intoTIme},#{goodsRfid})
+	</insert>
+
+	<!-- 按照查询条件分页查询商品入箱记录 -->
+	<select id="queryGoodsInto" resultMap="goodsIntoMap" >
+		select t_goodsInto.* from t_goodsInto,t_goods ${where} and t_goodsInto.goodsIntoObj = t_goods.goodsId limit #{startIndex},#{pageSize}
+	</select>
+	<resultMap id="goodsIntoMap" type="goodsInto">
+        <id property="goodsintoId" column="goodsintoId" />
+        <association property="goodsIntoObj" column="goodsIntoObj" select="com.chengxusheji.mapper.GoodsMapper.getGoods" />
+    </resultMap>
+
+    <!-- 按照查询条件查询所有商品入箱记录 -->
+	<select id="queryGoodsIntoList" resultMap="goodsIntoMap" >
+		select t_goodsInto.* from t_goodsInto,t_goods ${where} and t_goodsInto.goodsIntoObj = t_goods.goodsId
+	</select>
+
+    <!-- 按照查询条件的商品入箱记录数 -->
+	<select id="queryGoodsIntoCount" resultType="int">
+		select count(*) from t_goodsInto,t_goods ${where} and t_goodsInto.goodsIntoObj = t_goods.goodsId
+	</select>
+
+	<!-- 根据主键查询某个商品入箱记录 -->
+	<select id="getGoodsInto" parameterType="int" resultMap="goodsIntoMap">
+		select * from t_goodsInto where t_goodsInto.goodsintoId = #{goodsintoId}
+	</select>
+
+	<!-- 更新商品入箱记录 -->
+	<update id="updateGoodsInto" parameterType="goodsInto">
+		update t_goodsInto set goodsIntoObj=#{goodsIntoObj.goodsId},intoNumb=#{intoNumb},intoTIme=#{intoTIme},goodsRfid=#{goodsRfid} where goodsintoId = #{goodsintoId}
+	</update>
+
+	<!-- 删除商品入箱记录 -->
+	<delete id="deleteGoodsInto" parameterType="int">
+		delete from t_goodsInto where goodsintoId=#{goodsintoId}
+	</delete>
+
+</mapper>
